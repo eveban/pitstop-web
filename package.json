@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -22,7 +22,8 @@
     "react-input-mask": "^2.0.4",
     "react-intl-currency-input": "^0.2.6",
     "react-number-format": "^4.9.3",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "tsc": "^2.0.4"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
