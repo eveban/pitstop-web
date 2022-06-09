@@ -33,6 +33,9 @@ export const Agreement: React.FC = () => {
     await api.get(
       `agreements/generated-agreement?cpf=${cpfFormatado}&dataEvento=${dataEvento}`,
     );
+    await api.get(
+      `/agreements/send-mail?cpf=${cpfFormatado}&dataEvento=${dataEvento}`,
+    );
   };
 
   const isValidCPF = cpf => {
