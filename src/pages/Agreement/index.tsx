@@ -6,6 +6,8 @@ import CurrencyInput from 'react-currency-input-field';
 import moment from 'moment';
 import { BiMailSend } from 'react-icons/bi';
 
+import validaCPF from '../../utils/validaCPF';
+
 import { api } from '../../services/api';
 import './style.css';
 
@@ -38,26 +40,6 @@ export const Agreement: React.FC = () => {
     );
   };
 
-  const isValidCPF = cpf => {
-    if (typeof cpf !== 'string') return false;
-    cpf = cpf.replace(/[^\d]+/g, '');
-    if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false;
-    cpf = cpf.split('');
-    const validator = cpf
-      .filter((digit, index, array) => index >= array.length - 2 && digit)
-      .map(el => +el);
-    const toValidate = pop =>
-      cpf
-        .filter((digit, index, array) => index < array.length - pop && digit)
-        .map(el => +el);
-    const rest = (count, pop) =>
-      ((toValidate(pop).reduce((soma, el, i) => soma + el * (count - i), 0) *
-        10) %
-        11) %
-      10;
-    return !(rest(10, 2) !== validator[0] || rest(11, 1) !== validator[1]);
-  };
-
   const onSubmit = async (data: any) => {
     const {
       name,
@@ -80,7 +62,7 @@ export const Agreement: React.FC = () => {
       obs,
     } = data;
 
-    const validacao = isValidCPF(cpf);
+    const validacao = validaCPF(cpf);
 
     if (!validacao) {
       alert('CPF inválido!');
@@ -172,195 +154,240 @@ export const Agreement: React.FC = () => {
               <p>Preencha seus dados para emissão do contrato</p>
 
               <div className="field">
-                <label htmlFor="name">Nome completo</label>
-                <input id="name" {...register('name', { required: true })} />
-                {errors.name && <span>Nome obrigatório</span>}
-
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  {...register('email', { required: true })}
-                />
-                {errors.email && <span>E-mail obrigatório</span>}
-
-                <label htmlFor="cpf">CPF</label>
-                <InputMask
-                  type="text"
-                  {...register('cpf', { required: true })}
-                  name="cpf"
-                  mask="999.999.999-99"
-                  id="cpf"
-                />
-                {errors.cpf && <span>CPF obrigatório</span>}
-
-                <label htmlFor="whatsapp">
-                  Telefone (preferência WhatsApp)
-                </label>
-                <InputMask
-                  {...register('phone', { required: true })}
-                  type="tel"
-                  name="phone"
-                  mask="55(99)99999-9999"
-                  id="whatsapp"
-                />
-
-                <label htmlFor="telefone">CEP</label>
-                <InputMask
-                  type="text"
-                  mask="99.999-999"
-                  id="telefone"
-                  {...register('cep', { required: true })}
-                  onKeyUp={e =>
-                    handleSearchcep((e.target as HTMLTextAreaElement).value)
-                  }
-                />
-                {errors.cep && <span>CEP obrigatório</span>}
-
-                <label htmlFor="address">Rua</label>
-                <input
-                  type="text"
-                  value={endereco?.logradouro}
-                  {...register('address')}
-                  name="logradouro"
-                />
-
-                <label htmlFor="number">Número</label>
-                <input
-                  type="text"
-                  {...register('number', { required: true })}
-                  name="number"
-                />
-                {errors.number && <span>Número obrigatório</span>}
-
-                <label htmlFor="bairro">Bairro</label>
-                <input
-                  type="text"
-                  value={endereco?.bairro}
-                  {...register('bairro')}
-                  name="bairro"
-                  id="bairro"
-                />
-
-                <label htmlFor="localidade">Cidade</label>
-                <input
-                  value={endereco?.localidade}
-                  {...register('localidade')}
-                  name="localidade"
-                />
-
-                <label htmlFor="Produto">Produto</label>
-                <select {...register('product', { required: true })}>
-                  <option value="">Selecione o produto contratado</option>
-                  <option value="1">Totem Fotográfico</option>
-                  <option value="2">Hashtag Pitstop</option>
-                  <option value="3">Cabine Fotográfica Tradicional</option>
-                  <option value="4">Cabine Fotográfica Premium</option>
-                  <option value="5">Espelho Mágico</option>
-                  <option value="6">Espelho Meu (Portátil)</option>
-                </select>
-                {errors.product && <span>Produto obrigatório</span>}
-
-                <label htmlFor="valorContrato">Valor contratado</label>
-                <CurrencyInput
-                  prefix="R$"
-                  decimalSeparator=","
-                  decimalScale={2}
-                  intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-                  {...register('valorContrato', { required: true })}
-                />
-                {errors.valorContrato && <span>Valor obrigatório</span>}
-
-                <label htmlFor="quantidadeHoras">
-                  Quantidade de horas contratada
-                </label>
-                <input
-                  type="number"
-                  {...register('quantidadeHoras', { required: true })}
-                />
-                {errors.quantidadeHoras && (
-                  <span>Quantidade de horas obrigatória</span>
-                )}
-
-                <label htmlFor="formaPagamento">Forma de pagamento</label>
-                <select
-                  id="formaPagamento"
-                  {...register('formaPagamento', { required: true })}
-                >
-                  <option value="">Selecione a forma de pagamento</option>
-                  <option value="A prazo">A prazo</option>
-                  <option value="A vista">A vista</option>
-                </select>
-                {errors.formaPagamento && (
-                  <span>Forma de pagamento obrigatória</span>
-                )}
-
-                <label htmlFor="dataEntrada">Data do valor da entrada</label>
-                <input
-                  type="date"
-                  {...register('dataEntrada', { required: true })}
-                />
-                {errors.dataEntrada && (
-                  <span>Data do valor da entrada obrigatória</span>
-                )}
-
-                <label htmlFor="valorEntrada">Valor da entrada</label>
-                <CurrencyInput
-                  prefix="R$"
-                  decimalSeparator=","
-                  decimalScale={2}
-                  intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-                  {...register('valorEntrada', { required: true })}
-                />
-                {errors.valorEntrada && (
-                  <span>Valor da entrada obrigatória</span>
-                )}
-
-                <label htmlFor="dataEvento">Data do Evento</label>
-                <input
-                  type="date"
-                  {...register('dataEvento', { required: true })}
-                />
-                {errors.dataEvento && <span>Data do evento obrigatória</span>}
-                <label htmlFor="local">
-                  Local do evento (endereço ou nome)
-                </label>
-                <input type="text" {...register('local', { required: true })} />
-                {errors.local && <span>Local do evento obrigatório</span>}
-
-                <label htmlFor="cerimonial">Cerimonial</label>
-                <input
-                  type="text"
-                  {...register('cerimonial', { required: true })}
-                />
-                {errors.cerimonial && <span>Cerimonial obrigatório</span>}
-
-                <label htmlFor="initialHour">Horário de inicio do evento</label>
-                <input
-                  type="time"
-                  {...register('initialHour', { required: true })}
-                />
-                {errors.initialHour && (
-                  <span>Hora do início do evento obrigatória</span>
-                )}
-
-                <label htmlFor="endHour">Horário de término do evento</label>
-                <input
-                  type="time"
-                  {...register('endHour', { required: true })}
-                />
-                {errors.endHour && (
-                  <span>Horário de término do evento obrigatório</span>
-                )}
-
-                <label htmlFor="obs">Observações</label>
-                <textarea rows={4} id="obs" {...register('obs')} />
-
-                <button className="button" type="submit">
-                  <BiMailSend color="#FFF" size={24} />
-                  Enviar dados
-                </button>
+                <div>
+                  <label htmlFor="name">Nome completo</label>
+                  <input id="name" {...register('name', { required: true })} />
+                  {errors.name && <span>Nome obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    {...register('email', { required: true })}
+                  />
+                  {errors.email && <span>E-mail obrigatório</span>}
+                </div>
               </div>
+              <div className="field">
+                <div>
+                  <label htmlFor="cpf">CPF</label>
+                  <InputMask
+                    type="text"
+                    {...register('cpf', { required: true })}
+                    name="cpf"
+                    mask="999.999.999-99"
+                    id="cpf"
+                  />
+                  {errors.cpf && <span>CPF obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="whatsapp">
+                    Telefone (preferência WhatsApp)
+                  </label>
+                  <InputMask
+                    {...register('phone', { required: true })}
+                    type="tel"
+                    name="phone"
+                    mask="55(99)99999-9999"
+                    id="whatsapp"
+                  />
+                </div>
+              </div>
+              <div className="field">
+                <div>
+                  <label htmlFor="cep">CEP</label>
+                  <InputMask
+                    type="text"
+                    mask="99.999-999"
+                    id="cep"
+                    {...register('cep', { required: true })}
+                    onKeyUp={e =>
+                      handleSearchcep((e.target as HTMLTextAreaElement).value)
+                    }
+                  />
+                  {errors.cep && <span>CEP obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="address">Rua</label>
+                  <input
+                    type="text"
+                    value={endereco?.logradouro}
+                    {...register('address')}
+                    name="logradouro"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="number">Número</label>
+                  <input
+                    type="text"
+                    {...register('number', { required: true })}
+                    name="number"
+                  />
+                  {errors.number && <span>Número obrigatório</span>}
+                </div>
+              </div>
+              <div className="field">
+                <div>
+                  <label htmlFor="localidade">Cidade</label>
+
+                  <input
+                    value={endereco?.localidade}
+                    {...register('localidade')}
+                    name="localidade"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="bairro">Bairro</label>
+                  <input
+                    type="text"
+                    value={endereco?.bairro}
+                    {...register('bairro')}
+                    name="bairro"
+                    id="bairro"
+                  />
+                </div>
+              </div>
+              <div className="field">
+                <div>
+                  <label htmlFor="Produto">Produto</label>
+                  <select {...register('product', { required: true })}>
+                    <option value="">Selecione o produto contratado</option>
+                    <option value="1">Totem Fotográfico</option>
+                    <option value="2">Hashtag Pitstop</option>
+                    <option value="3">Cabine Fotográfica Tradicional</option>
+                    <option value="4">Cabine Fotográfica Premium</option>
+                    <option value="5">Espelho Mágico</option>
+                    <option value="6">Espelho Meu (Portátil)</option>
+                  </select>
+                  {errors.product && <span>Produto obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="valorContrato">Valor contratado</label>
+                  <CurrencyInput
+                    prefix="R$"
+                    decimalSeparator=","
+                    decimalScale={2}
+                    intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                    {...register('valorContrato', { required: true })}
+                  />
+                  {errors.valorContrato && <span>Valor obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="quantidadeHoras">
+                    Quantidade de horas contratada
+                  </label>
+                  <input
+                    type="number"
+                    {...register('quantidadeHoras', { required: true })}
+                  />
+                  {errors.quantidadeHoras && (
+                    <span>Quantidade de horas obrigatória</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="field">
+                <div>
+                  <label htmlFor="valorEntrada">Valor da entrada</label>
+                  <CurrencyInput
+                    prefix="R$"
+                    decimalSeparator=","
+                    decimalScale={2}
+                    intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                    {...register('valorEntrada', { required: true })}
+                  />
+                  {errors.valorEntrada && (
+                    <span>Valor da entrada obrigatória</span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="formaPagamento">Forma de pagamento</label>
+                  <select
+                    id="formaPagamento"
+                    {...register('formaPagamento', { required: true })}
+                  >
+                    <option value="">Selecione a forma de pagamento</option>
+                    <option value="A prazo">A prazo</option>
+                    <option value="A vista">A vista</option>
+                  </select>
+                  {errors.formaPagamento && (
+                    <span>Forma de pagamento obrigatória</span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="dataEntrada">Data do valor da entrada</label>
+                  <input
+                    type="date"
+                    {...register('dataEntrada', { required: true })}
+                  />
+                  {errors.dataEntrada && (
+                    <span>Data do valor da entrada obrigatória</span>
+                  )}
+                </div>
+              </div>
+              <div className="field">
+                <div>
+                  <label htmlFor="dataEvento">Data do Evento</label>
+                  <input
+                    type="date"
+                    {...register('dataEvento', { required: true })}
+                  />
+                  {errors.dataEvento && <span>Data do evento obrigatória</span>}
+                </div>
+                <div>
+                  <label htmlFor="initialHour">
+                    Horário de inicio do evento
+                  </label>
+                  <input
+                    type="time"
+                    {...register('initialHour', { required: true })}
+                  />
+                  {errors.initialHour && (
+                    <span>Hora do início do evento obrigatória</span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="endHour">Horário de término do evento</label>
+                  <input
+                    type="time"
+                    {...register('endHour', { required: true })}
+                  />
+                  {errors.endHour && (
+                    <span>Horário de término do evento obrigatório</span>
+                  )}
+                </div>
+              </div>
+              <div className="field">
+                <div>
+                  <label htmlFor="local">
+                    Local do evento (endereço ou nome)
+                  </label>
+                  <input
+                    type="text"
+                    {...register('local', { required: true })}
+                  />
+                  {errors.local && <span>Local do evento obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="cerimonial">Cerimonial</label>
+                  <input
+                    type="text"
+                    {...register('cerimonial', { required: true })}
+                  />
+                  {errors.cerimonial && <span>Cerimonial obrigatório</span>}
+                </div>
+              </div>
+              <div className="field">
+                <div>
+                  <label htmlFor="obs">Observações</label>
+                  <textarea rows={4} id="obs" {...register('obs')} />
+                </div>
+              </div>
+              <button className="button" type="submit">
+                <BiMailSend color="#FFF" size={24} />
+                Enviar dados
+              </button>
             </div>
           </form>
         </div>
