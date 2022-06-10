@@ -89,7 +89,7 @@ export const Agreement: React.FC = () => {
       quantidadeHoras,
       dataEvento: moment(dataEvento, 'YYYY-MM-DD'),
       local,
-      startEventHour: `${moment(dataEvento, 'YYYY-MM-DD')} ${initialHour}`,
+      startEventHour: `${dataEvento} ${initialHour}`,
       endEventHour: `${dataEvento} ${endHour}`,
       indication: cerimonial,
       typePayment: formaPagamento,
