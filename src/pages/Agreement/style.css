@@ -75,12 +75,11 @@ body {
 .field input {
   flex: 1;
   width: 100%;
-  /* background: #f0f0f5; */
   border-radius: 0.8rem;
   border: none;
   padding: 2.4rem;
   font-size: 16px;
-  color: rgb(108, 108, 128);
+  color: rgba(0, 0, 0, 0.4);
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
 }
 .field input:focus {
@@ -641,6 +640,10 @@ footer .social-links {
 
   .field div {
     margin-top: 1rem;
+  }
+  .field div span {
+    margin-left: 1rem;
+    font-size: 1.4rem;
   }
 
   .field div {

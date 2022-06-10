@@ -21,6 +21,7 @@ interface IEndereco {
 
 export const Agreement: React.FC = () => {
   const [endereco, setEndereco] = useState<IEndereco>();
+  const [tipoProduto, setTipoProduto] = useState();
   const {
     register,
     handleSubmit,
@@ -49,6 +50,7 @@ export const Agreement: React.FC = () => {
       cep,
       number,
       product,
+      sizeTemplate,
       valorContrato,
       quantidadeHoras,
       dataEvento,
@@ -58,6 +60,7 @@ export const Agreement: React.FC = () => {
       cerimonial,
       formaPagamento,
       dataEntrada,
+      nameTemplate,
       valorEntrada,
       obs,
     } = data;
@@ -76,6 +79,7 @@ export const Agreement: React.FC = () => {
       phone,
       address: `${endereco?.logradouro}, ${number}, ${endereco?.bairro}, ${endereco?.localidade}/${endereco?.uf}, ${cep}`,
       product_id: product,
+      sizeTemplate,
       valorContrato: Number(
         String(valorContrato)
           .replace('R$', '')
@@ -98,6 +102,7 @@ export const Agreement: React.FC = () => {
       ),
       status: 'Aberto',
       company_id: 1,
+      nameTemplate,
       observations: obs,
     };
 
@@ -251,16 +256,42 @@ export const Agreement: React.FC = () => {
               <div className="field">
                 <div>
                   <label htmlFor="Produto">Produto</label>
-                  <select {...register('product', { required: true })}>
-                    <option value="">Selecione o produto contratado</option>
-                    <option value="1">Totem Fotográfico</option>
-                    <option value="2">Hashtag Pitstop</option>
-                    <option value="3">Cabine Fotográfica Tradicional</option>
-                    <option value="4">Cabine Fotográfica Premium</option>
-                    <option value="5">Espelho Mágico</option>
-                    <option value="6">Espelho Meu (Portátil)</option>
+                  <select
+                    {...register('product', { required: true })}
+                    onChange={e => setTipoProduto(e.target.value as any)}
+                  >
+                    <option value="">Selecione o produto</option>
+                    <option value={1}>Totem Fotográfico</option>
+                    <option value={2}>Hashtag Pitstop</option>
+                    <option value={3}>Cabine Fotográfica Tradicional</option>
+                    <option value={4}>Cabine Fotográfica Premium</option>
+                    <option value={5}>Espelho Mágico</option>
+                    <option value={6}>Espelho Meu (Portátil)</option>
                   </select>
                   {errors.product && <span>Produto obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="sizeTemplate">Tipo da moldura</label>
+                  <select
+                    id="sizeTemplate"
+                    {...register('sizeTemplate', { required: true })}
+                  >
+                    <option value="">Selecione</option>
+                    <option value="A definir">A definir</option>
+                    <option value="Tradicional (10x15)">
+                      Tradicional (10x15)
+                    </option>
+                    <option value="Tirinhas (5x15)">Tirinhas (5x15)</option>
+                    {tipoProduto !== '1' && (
+                      <option value="Polaróide (7,5x10)">
+                        Polaróide (7,5x10)
+                      </option>
+                    )}
+                    ,
+                  </select>
+                  {errors.formaPagamento && (
+                    <span>Forma de pagamento obrigatória</span>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="valorContrato">Valor contratado</label>
@@ -359,6 +390,14 @@ export const Agreement: React.FC = () => {
                 </div>
               </div>
               <div className="field">
+                <div>
+                  <label htmlFor="nameTemplate">Nome para moldura</label>
+                  <input
+                    id="nameTemplate"
+                    type="text"
+                    {...register('nameTemplate')}
+                  />
+                </div>
                 <div>
                   <label htmlFor="local">
                     Local do evento (endereço ou nome)
