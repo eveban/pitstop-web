@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import InputMask from 'react-input-mask';
 import axios from 'axios';
 import CurrencyInput from 'react-currency-input-field';
 import moment from 'moment';
 import { BiMailSend } from 'react-icons/bi';
+
+import { LoadingSpinner } from '../../components/Spinner';
 
 import validaCPF from '../../utils/validaCPF';
 
@@ -20,8 +23,13 @@ interface IEndereco {
 }
 
 export const Agreement: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const [endereco, setEndereco] = useState<IEndereco>();
   const [tipoProduto, setTipoProduto] = useState();
+
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -71,6 +79,7 @@ export const Agreement: React.FC = () => {
       alert('CPF inválido!');
       return;
     }
+    setIsLoading(true);
 
     const result = {
       name,
@@ -109,6 +118,10 @@ export const Agreement: React.FC = () => {
     await api.post('agreements', result);
 
     await handleGeneratedAgreementSendToEmail(cpf, dataEvento);
+
+    setIsLoading(false);
+
+    navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
@@ -123,6 +136,10 @@ export const Agreement: React.FC = () => {
       setEndereco(result.data);
     }
   };
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
