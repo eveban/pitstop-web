@@ -412,8 +412,9 @@ export const Agreement: React.FC = () => {
                   <input
                     id="nameTemplate"
                     type="text"
-                    {...register('nameTemplate')}
+                    {...register('nameTemplate', { required: true })}
                   />
+                  {errors.local && <span>Nome para moldura</span>}
                 </div>
                 <div>
                   <label htmlFor="local">
