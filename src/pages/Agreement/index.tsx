@@ -10,6 +10,7 @@ import { BiMailSend } from 'react-icons/bi';
 import { LoadingSpinner } from '../../components/Spinner';
 
 import validaCPF from '../../utils/validaCPF';
+import validaCNPJ from '../../utils/validaCNPJ';
 
 import { api } from '../../services/api';
 import './style.css';
@@ -27,6 +28,7 @@ export const Agreement: React.FC = () => {
 
   const [endereco, setEndereco] = useState<IEndereco>();
   const [tipoProduto, setTipoProduto] = useState();
+  const [tipoPessoa, setTipoPessoa] = useState();
 
   const navigate = useNavigate();
 
@@ -73,18 +75,38 @@ export const Agreement: React.FC = () => {
       obs,
     } = data;
 
-    const validacao = validaCPF(cpf);
+    const formataCPFCNPJ = await cpf
+      .replace('-', '')
+      .replace('.', '')
+      .replace('.', '')
+      .replace('/', '');
 
-    if (!validacao) {
-      alert('CPF inválido!');
-      return;
+    if (formataCPFCNPJ.length === 11) {
+      const validacao = validaCPF(formataCPFCNPJ);
+      if (!validacao) {
+        alert('CPF inválido!');
+        return;
+      }
     }
+
+    if (formataCPFCNPJ.length > 12) {
+      const validacao = validaCNPJ(formataCPFCNPJ);
+      if (!validacao) {
+        alert('CNPJ inválido!');
+        return;
+      }
+    }
+
     setIsLoading(true);
 
     const result = {
       name,
       email,
-      cpf: cpf.replace('-', '').replace('.', '').replace('.', ''),
+      cpf: cpf
+        .replace('-', '')
+        .replace('.', '')
+        .replace('.', '')
+        .replace('/', ''),
       phone,
       address: `${endereco?.logradouro}, ${number}, ${endereco?.bairro}, ${endereco?.localidade}/${endereco?.uf}, ${cep}`,
       product_id: product,
@@ -121,7 +143,7 @@ export const Agreement: React.FC = () => {
 
     setIsLoading(false);
 
-    navigate('/success-mail');
+    // navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
@@ -177,10 +199,47 @@ export const Agreement: React.FC = () => {
 
               <div className="field">
                 <div>
+                  <label htmlFor="tipoPessoa">Tipo cliente</label>
+                  <select
+                    // {...register('product', { required: true })}
+                    onChange={e => setTipoPessoa(e.target.value as any)}
+                  >
+                    <option value="">Selecione</option>
+                    <option value={1}>Pessoa Física</option>
+                    <option value={2}>Pessoa Jurídica</option>
+                  </select>
+                  {/* {errors.product && <span>Produto obrigatório</span>} */}
+                </div>
+                <div>
                   <label htmlFor="name">Nome completo</label>
                   <input id="name" {...register('name', { required: true })} />
                   {errors.name && <span>Nome obrigatório</span>}
                 </div>
+                <div>
+                  <label htmlFor="cpf">
+                    {tipoPessoa === '2' ? 'CNPJ' : 'CPF'}
+                  </label>
+                  <InputMask
+                    type="text"
+                    {...register('cpf', { required: true })}
+                    name="cpf"
+                    mask={
+                      tipoPessoa === '2'
+                        ? '99.999.999/9999-99'
+                        : '999.999.999-99'
+                    }
+                    id="cpf"
+                  />
+                  {errors.cpf && (
+                    <span>
+                      {tipoPessoa === '2'
+                        ? 'CNPJ obrigatório'
+                        : 'CPF obrigatório'}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="field">
                 <div>
                   <label htmlFor="email">Email</label>
                   <input
@@ -190,19 +249,7 @@ export const Agreement: React.FC = () => {
                   />
                   {errors.email && <span>E-mail obrigatório</span>}
                 </div>
-              </div>
-              <div className="field">
-                <div>
-                  <label htmlFor="cpf">CPF</label>
-                  <InputMask
-                    type="text"
-                    {...register('cpf', { required: true })}
-                    name="cpf"
-                    mask="999.999.999-99"
-                    id="cpf"
-                  />
-                  {errors.cpf && <span>CPF obrigatório</span>}
-                </div>
+
                 <div>
                   <label htmlFor="whatsapp">
                     Telefone (preferência WhatsApp)
