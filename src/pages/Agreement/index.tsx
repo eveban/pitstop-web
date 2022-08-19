@@ -143,7 +143,7 @@ export const Agreement: React.FC = () => {
 
     setIsLoading(false);
 
-    // navigate('/success-mail');
+    navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
