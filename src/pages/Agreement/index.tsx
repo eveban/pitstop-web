@@ -331,6 +331,9 @@ export const Agreement: React.FC = () => {
                     <option value={4}>Cabine Fotográfica Premium</option>
                     <option value={5}>Espelho Mágico</option>
                     <option value={6}>Espelho Meu (Portátil)</option>
+                    <option value={9}>Ring Light</option>
+                    <option value={10}>Cabine Infinity + Ring Light</option>
+                    <option value={11}>Cabine Infinity</option>
                   </select>
                   {errors.product && <span>Produto obrigatório</span>}
                 </div>
