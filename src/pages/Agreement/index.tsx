@@ -139,11 +139,17 @@ export const Agreement: React.FC = () => {
 
     await api.post('agreements', result);
 
+    await api.post('agreements/createGoogleEvent', result, {
+      headers: {
+        calendarid: 'pitstopcabines@gmail.com',
+      },
+    });
+
     await handleGeneratedAgreementSendToEmail(cpf, dataEvento);
 
     setIsLoading(false);
 
-    navigate('/success-mail');
+    // navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
