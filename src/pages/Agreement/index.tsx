@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import InputMask from 'react-input-mask';
@@ -27,10 +27,45 @@ export const Agreement: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [endereco, setEndereco] = useState<IEndereco>();
-  const [tipoProduto, setTipoProduto] = useState();
+  const [tipoProduto, setTipoProduto] = useState('');
   const [tipoPessoa, setTipoPessoa] = useState();
+  const [descricaoProduto, setDescricaoProduto] = useState('');
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    switch (tipoProduto) {
+      case '1':
+        setDescricaoProduto('Totem Fotográfico');
+        break;
+      case '2':
+        setDescricaoProduto('Hashtag Pitstop');
+        break;
+      case '3':
+        setDescricaoProduto('Cabine Fotográfica Tradicional');
+        break;
+      case '4':
+        setDescricaoProduto('Cabine Fotográfica Premium');
+        break;
+      case '5':
+        setDescricaoProduto('Espelho Mágico');
+        break;
+      case '6':
+        setDescricaoProduto('Espelho Meu (Portátil)');
+        break;
+      case '9':
+        setDescricaoProduto('Ring Light');
+        break;
+      case '10':
+        setDescricaoProduto('Cabine Infinity e Ring Light');
+        break;
+      case '11':
+        setDescricaoProduto('Cabine Infinity');
+        break;
+      default:
+        setDescricaoProduto('');
+    }
+  }, [tipoProduto]);
 
   const {
     register,
@@ -101,6 +136,7 @@ export const Agreement: React.FC = () => {
 
     const result = {
       name,
+      descricaoProduto,
       email,
       cpf: cpf
         .replace('-', '')
