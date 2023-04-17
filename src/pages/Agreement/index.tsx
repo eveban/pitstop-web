@@ -124,6 +124,7 @@ export const Agreement: React.FC = () => {
       dataEvento,
       initialHour,
       endHour,
+      local,
       cerimonial,
       formaPagamento,
       dataEntrada,
@@ -177,7 +178,7 @@ export const Agreement: React.FC = () => {
       ),
       quantidadeHoras,
       dataEvento: moment(dataEvento, 'YYYY-MM-DD'),
-      local: localEvento,
+      local: localEvento || local,
       nameLocal,
       startEventHour: `${dataEvento} ${initialHour}`,
       endEventHour: `${dataEvento} ${endHour}`,
@@ -549,8 +550,7 @@ export const Agreement: React.FC = () => {
                       type="text"
                       autoComplete="off"
                       placeholder="Digite o endereço ou nome do local"
-                      // {...register(localEvento, { required: true })}
-                      // {...register('local', { required: true })}
+                      {...register('local', { required: true })}
                     />
                   </StandaloneSearchBox>
                   {errors.local && <span>Local do evento obrigatório</span>}
