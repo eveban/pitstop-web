@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+/* eslint-disable no-unsafe-optional-chaining */
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -5,6 +7,9 @@ import InputMask from 'react-input-mask';
 import axios from 'axios';
 import CurrencyInput from 'react-currency-input-field';
 import moment from 'moment';
+
+import { LoadScript, StandaloneSearchBox } from '@react-google-maps/api';
+
 import { BiMailSend } from 'react-icons/bi';
 
 import { LoadingSpinner } from '../../components/Spinner';
@@ -29,7 +34,25 @@ export const Agreement: React.FC = () => {
   const [endereco, setEndereco] = useState<IEndereco>();
   const [tipoProduto, setTipoProduto] = useState('');
   const [tipoPessoa, setTipoPessoa] = useState();
+  const [localEvento, setLocalEvento] = useState('');
+  const [nameLocal, setNameLocal] = useState('');
   const [descricaoProduto, setDescricaoProduto] = useState('');
+
+  const [searchBoxA, setSearchBoxA] =
+    React.useState<google.maps.places.SearchBox>();
+
+  const onLoadA = (ref: google.maps.places.SearchBox) => {
+    setSearchBoxA(ref);
+  };
+
+  const onPlacesChangedA = () => {
+    const places = searchBoxA?.getPlaces();
+    const place = places?.[0];
+    const { name, formatted_address }: any = place;
+
+    setLocalEvento(formatted_address);
+    setNameLocal(name);
+  };
 
   const navigate = useNavigate();
 
@@ -99,7 +122,6 @@ export const Agreement: React.FC = () => {
       valorContrato,
       quantidadeHoras,
       dataEvento,
-      local,
       initialHour,
       endHour,
       cerimonial,
@@ -132,7 +154,7 @@ export const Agreement: React.FC = () => {
       }
     }
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     const result = {
       name,
@@ -155,7 +177,8 @@ export const Agreement: React.FC = () => {
       ),
       quantidadeHoras,
       dataEvento: moment(dataEvento, 'YYYY-MM-DD'),
-      local,
+      local: localEvento,
+      nameLocal,
       startEventHour: `${dataEvento} ${initialHour}`,
       endEventHour: `${dataEvento} ${endHour}`,
       indication: cerimonial,
@@ -185,7 +208,7 @@ export const Agreement: React.FC = () => {
 
     setIsLoading(false);
 
-    navigate('/success-mail');
+    // navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
@@ -207,6 +230,12 @@ export const Agreement: React.FC = () => {
 
   return (
     <>
+      <LoadScript
+        googleMapsApiKey=""
+        libraries={['places']}
+        language="pt_BR"
+        region="BR"
+      />
       <nav id="navigaton">
         <div className="wrapper">
           <a className="logo" href="#home">
@@ -512,12 +541,21 @@ export const Agreement: React.FC = () => {
                   <label htmlFor="local">
                     Local do evento (endereço ou nome)
                   </label>
-                  <input
-                    type="text"
-                    {...register('local', { required: true })}
-                  />
+                  <StandaloneSearchBox
+                    onLoad={onLoadA}
+                    onPlacesChanged={onPlacesChangedA}
+                  >
+                    <input
+                      type="text"
+                      autoComplete="off"
+                      placeholder="Digite o endereço ou nome do local"
+                      // {...register(localEvento, { required: true })}
+                      // {...register('local', { required: true })}
+                    />
+                  </StandaloneSearchBox>
                   {errors.local && <span>Local do evento obrigatório</span>}
                 </div>
+
                 <div>
                   <label htmlFor="cerimonial">Cerimonial</label>
                   <input
