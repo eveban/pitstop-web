@@ -82,8 +82,8 @@ export const Agreement: React.FC = () => {
       case '10':
         setDescricaoProduto('Cabine Infinity e Ring Light');
         break;
-      case '11':
-        setDescricaoProduto('Cabine Infinity');
+      case '12':
+        setDescricaoProduto('Cabine Infinity Led');
         break;
       default:
         setDescricaoProduto('');
