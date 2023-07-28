@@ -85,6 +85,12 @@ export const Agreement: React.FC = () => {
       case '12':
         setDescricaoProduto('Cabine Infinity Led');
         break;
+      case '15':
+        setDescricaoProduto('Ring Light e Caricatura');
+        break;
+      case '16':
+        setDescricaoProduto('Cabine Infinity QR e Caricatura');
+        break;
       default:
         setDescricaoProduto('');
     }
@@ -406,6 +412,8 @@ export const Agreement: React.FC = () => {
                     <option value={9}>Ring Light</option>
                     <option value={10}>Cabine Infinity + Ring Light</option>
                     <option value={12}>Cabine Infinity</option>
+                    <option value={15}>Ring Light + Caricatura</option>
+                    <option value={16}>Cabine Infinity QR + Caricatura</option>
                   </select>
                   {errors.product && <span>Produto obrigatório</span>}
                 </div>
