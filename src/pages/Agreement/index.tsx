@@ -37,6 +37,7 @@ export const Agreement: React.FC = () => {
   const [localEvento, setLocalEvento] = useState('');
   const [nameLocal, setNameLocal] = useState('');
   const [descricaoProduto, setDescricaoProduto] = useState('');
+  const [listProducts, setListProducts] = useState([]);
 
   const [searchBoxA, setSearchBoxA] =
     React.useState<google.maps.places.SearchBox>();
@@ -55,6 +56,18 @@ export const Agreement: React.FC = () => {
   };
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    api
+      .get('/products', {
+        headers: {
+          company: 1,
+        },
+      })
+      .then(response => {
+        setListProducts(response.data);
+      });
+  }, []);
 
   useEffect(() => {
     switch (tipoProduto) {
@@ -94,6 +107,7 @@ export const Agreement: React.FC = () => {
       default:
         setDescricaoProduto('');
     }
+    console.log('Tipo produto: ', tipoProduto);
   }, [tipoProduto]);
 
   const {
@@ -402,6 +416,69 @@ export const Agreement: React.FC = () => {
                     {...register('product', { required: true })}
                     onChange={e => setTipoProduto(e.target.value as any)}
                   >
+                    <option>Selecione o produto</option>
+                    {listProducts.map((item: any) => (
+                      <option value={item.id}>
+                        {item.id} - {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.product && <span>Produto obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="sizeTemplate">Tipo da moldura</label>
+                  <select
+                    id="sizeTemplate"
+                    {...register('sizeTemplate', { required: true })}
+                  >
+                    <option value="">Selecione</option>
+                    <option value="A definir">A definir</option>
+                    <option value="Tradicional (10x15)">
+                      Tradicional (10x15)
+                    </option>
+                    <option value="Tirinhas (5x15)">Tirinhas (5x15)</option>
+                    {tipoProduto !== '1' && (
+                      <option value="Polaróide (7,5x10)">
+                        Polaróide (7,5x10)
+                      </option>
+                    )}
+                    ,
+                  </select>
+                  {errors.formaPagamento && (
+                    <span>Forma de pagamento obrigatória</span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="valorContrato">Valor contratado</label>
+                  <CurrencyInput
+                    prefix="R$"
+                    decimalSeparator=","
+                    decimalScale={2}
+                    intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                    {...register('valorContrato', { required: true })}
+                  />
+                  {errors.valorContrato && <span>Valor obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="quantidadeHoras">
+                    Quantidade de horas contratada
+                  </label>
+                  <input
+                    type="number"
+                    {...register('quantidadeHoras', { required: true })}
+                  />
+                  {errors.quantidadeHoras && (
+                    <span>Quantidade de horas obrigatória</span>
+                  )}
+                </div>
+              </div>
+              {/* <div className="field">
+                <div>
+                  <label htmlFor="Produto">Produto</label>
+                  <select
+                    {...register('product', { required: true })}
+                    onChange={e => setTipoProduto(e.target.value as any)}
+                  >
                     <option value="">Selecione o produto</option>
                     <option value={1}>Totem Fotográfico</option>
                     <option value={2}>Hashtag Pitstop</option>
@@ -463,7 +540,7 @@ export const Agreement: React.FC = () => {
                     <span>Quantidade de horas obrigatória</span>
                   )}
                 </div>
-              </div>
+              </div> */}
 
               <div className="field">
                 <div>

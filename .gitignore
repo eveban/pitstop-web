@@ -12,8 +12,6 @@ dist
 dist-ssr
 *.local
 
-/src/services/*
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -26,3 +24,5 @@ dist-ssr
 *.sw?
 
 .vite-inspect
+src/services/api.ts
+
