@@ -144,6 +144,24 @@ body {
   outline: none;
 }
 
+.signature-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: white;
+  color: rgb(108, 108, 128);
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 0.8rem;
+}
+.signature-container #container-size {
+  /* width: 500px; */
+  height: 200px;
+  border: 2px solid #a5a5a5;
+  border-radius: 8px;
+}
+
 ul {
   list-style: none;
 }
@@ -193,23 +211,22 @@ section .content p {
   border: none;
   border-radius: 4rem;
 
-  margin-block: 3rem;
+  margin-block: 1rem;
 
-  height: 6.2rem;
+  height: 6rem;
   width: 100%;
 
   padding: 1.6rem 3.2rem;
-  /* width: fit-content; Alinha ao conteúdo */
 
   color: white;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   text-transform: uppercase;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.6rem; /* Espaço entre elementos */
+  flex-direction: column;
 
   text-decoration: none;
 }
@@ -689,6 +706,7 @@ footer .social-links {
     color: rgb(108, 108, 128);
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
   }
+
   .field textarea:focus {
     outline: none;
   }
@@ -696,6 +714,33 @@ footer .social-links {
   section header h2 {
     font-size: 4rem;
     line-height: 5.2rem;
+  }
+
+  .field-signature {
+    /* flex-direction: row; */
+    justify-content: space-between;
+    padding-inline: 2.4rem;
+    color: var(--paragraph);
+
+    gap: 1.6rem;
+  }
+
+  .signature-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: white;
+    color: rgb(108, 108, 128);
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 0.8rem;
+  }
+  .signature-container #container-size {
+    width: 'auto';
+    border: 2px solid #a5a5a5;
+    height: 200px;
+    border-radius: 8px;
   }
 
   /*=========== Navigation ==========*/
@@ -869,8 +914,8 @@ footer .social-links {
   #home .button {
     display: flex;
     justify-content: center;
-    margin-top: 6rem;
-    width: 20%;
+    margin-top: 1rem;
+    width: 50%;
   }
 
   #home img {

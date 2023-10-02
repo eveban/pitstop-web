@@ -7,6 +7,7 @@ import InputMask from 'react-input-mask';
 import axios from 'axios';
 import CurrencyInput from 'react-currency-input-field';
 import moment from 'moment';
+import SignatureCanvas from 'react-signature-canvas';
 
 import { LoadScript, StandaloneSearchBox } from '@react-google-maps/api';
 
@@ -38,6 +39,23 @@ export const Agreement: React.FC = () => {
   const [nameLocal, setNameLocal] = useState('');
   const [descricaoProduto, setDescricaoProduto] = useState('');
   const [listProducts, setListProducts] = useState([]);
+  const [width, setWidth] = useState<number>(window.innerWidth);
+
+  const [dataURL, setDataURL] = React.useState<string | null>(null);
+  const padRef = React.useRef<SignatureCanvas>(null);
+
+  const isMobile = width <= 768;
+
+  const navigate = useNavigate();
+
+  const handleClear = () => {
+    padRef.current?.clear();
+  };
+
+  const handleGenerate = () => {
+    const url = padRef.current?.getTrimmedCanvas().toDataURL('image/png');
+    if (url) setDataURL(url);
+  };
 
   const [searchBoxA, setSearchBoxA] =
     React.useState<google.maps.places.SearchBox>();
@@ -55,7 +73,15 @@ export const Agreement: React.FC = () => {
     setNameLocal(name);
   };
 
-  const navigate = useNavigate();
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowSizeChange);
+    return () => {
+      window.removeEventListener('resize', handleWindowSizeChange);
+    };
+  }, []);
 
   useEffect(() => {
     api
@@ -130,6 +156,8 @@ export const Agreement: React.FC = () => {
   };
 
   const onSubmit = async (data: any) => {
+    const url = padRef.current?.getTrimmedCanvas().toDataURL('image/png');
+    if (url) setDataURL(url);
     const {
       name,
       email,
@@ -151,6 +179,7 @@ export const Agreement: React.FC = () => {
       nameTemplate,
       valorEntrada,
       obs,
+      signature,
     } = data;
 
     const formataCPFCNPJ = await cpf
@@ -215,6 +244,7 @@ export const Agreement: React.FC = () => {
       company_id: 1,
       nameTemplate,
       observations: obs,
+      signature: dataURL,
     };
 
     await api.post('agreements', result);
@@ -229,7 +259,7 @@ export const Agreement: React.FC = () => {
 
     setIsLoading(false);
 
-    navigate('/success-mail');
+    // navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
@@ -256,6 +286,7 @@ export const Agreement: React.FC = () => {
         libraries={['places']}
         language="pt_BR"
         region="BR"
+        loadingElement
       />
       <nav id="navigaton">
         <div className="wrapper">
@@ -656,10 +687,54 @@ export const Agreement: React.FC = () => {
                   <textarea rows={4} id="obs" {...register('obs')} />
                 </div>
               </div>
-              <button className="button" type="submit">
-                <BiMailSend color="#FFF" size={24} />
-                Enviar dados
-              </button>
+              {/* <div className="field-signature">
+                <label
+                  htmlFor="obs"
+                  style={{ color: '#484F56', marginLeft: '1rem' }}
+                >
+                  Assinatura
+                </label>
+
+                <div className="signature-container">
+                  <div id="container-size">
+                    <SignatureCanvas
+                      ref={padRef}
+                      canvasProps={{
+                        width: isMobile ? 300 : 500,
+                        height: 200,
+                        className: 'sigCanvas',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div> */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  marginBlock: '0.6rem',
+                  marginInline: isMobile ? '0rem' : '2.5rem',
+                  gap: '1rem',
+                }}
+              >
+                {/* <button
+                  className="button"
+                  type="button"
+                  style={{ display: 'flex', flex: 1 }}
+                  onClick={handleClear}
+                >
+                  Limpar assinatura
+                </button> */}
+
+                <button
+                  className="button"
+                  type="submit"
+                  style={{ display: 'flex', flex: 1, backgroundColor: 'green' }}
+                >
+                  <BiMailSend color="#FFF" size={24} />
+                  Confirmar
+                </button>
+              </div>
             </div>
           </form>
         </div>
