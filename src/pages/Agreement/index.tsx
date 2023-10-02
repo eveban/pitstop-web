@@ -13,12 +13,12 @@ import { LoadScript, StandaloneSearchBox } from '@react-google-maps/api';
 
 import { BiMailSend } from 'react-icons/bi';
 
+import { api } from '../../services/api';
 import { LoadingSpinner } from '../../components/Spinner';
 
 import validaCPF from '../../utils/validaCPF';
 import validaCNPJ from '../../utils/validaCNPJ';
 
-import { api } from '../../services/api';
 import './style.css';
 
 interface IEndereco {
