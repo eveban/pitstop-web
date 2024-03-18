@@ -212,7 +212,7 @@ export const Agreement: React.FC = () => {
       }
     }
 
-    // setIsLoading(true);
+    setIsLoading(true);
 
     const result = {
       name,
@@ -270,7 +270,7 @@ export const Agreement: React.FC = () => {
 
     setIsLoading(false);
 
-    // navigate('/success-mail');
+    navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
