@@ -144,14 +144,17 @@ export const Agreement: React.FC = () => {
 
   const handleGeneratedAgreementSendToEmail = async (
     cpf: string,
-    dataEvento: Date,
+    dataHoraInicioEvento: Date,
   ) => {
+    const formataData = moment(dataHoraInicioEvento).format('YYYY-MM-DD');
+
+    console.log('Data formatada: ', formataData);
     const cpfFormatado = cpf.replace(/[^\d]+/g, '');
     await api.get(
-      `agreements/generated-agreement?cpf=${cpfFormatado}&dataEvento=${dataEvento}`,
+      `agreements/generated-agreement?cpf=${cpfFormatado}&dataEvento=${formataData}`,
     );
     await api.get(
-      `/agreements/send-mail?cpf=${cpfFormatado}&dataEvento=${dataEvento}`,
+      `/agreements/send-mail?cpf=${cpfFormatado}&dataEvento=${formataData}`,
     );
   };
 
@@ -170,6 +173,8 @@ export const Agreement: React.FC = () => {
       valorContrato,
       quantidadeHoras,
       dataEvento,
+      dataHoraInicioEvento,
+      dataHoraFimEvento,
       initialHour,
       endHour,
       local,
@@ -179,6 +184,9 @@ export const Agreement: React.FC = () => {
       nameTemplate,
       valorEntrada,
       obs,
+      typeEvent,
+      quantityPersons,
+      printerPhoto,
       signature,
     } = data;
 
@@ -204,7 +212,7 @@ export const Agreement: React.FC = () => {
       }
     }
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     const result = {
       name,
@@ -226,14 +234,14 @@ export const Agreement: React.FC = () => {
           .replace(',', '.'),
       ),
       quantidadeHoras,
-      dataEvento: moment(dataEvento, 'YYYY-MM-DD'),
+      dataEvento: moment(dataHoraInicioEvento, 'YYYY-MM-DD'),
       local: localEvento || local,
       nameLocal,
-      startEventHour: `${dataEvento} ${initialHour}`,
-      endEventHour: `${dataEvento} ${endHour}`,
+      startEventHour: dataHoraInicioEvento,
+      endEventHour: dataHoraFimEvento,
       indication: cerimonial,
       typePayment: formaPagamento,
-      dataEntrada: moment(dataEntrada, 'YYYY-MM-DD'),
+      dataEntrada: moment(new Date(), 'YYYY-MM-DD').add(5, 'days'),
       valorEntrada: Number(
         String(valorEntrada)
           .replace('R$', '')
@@ -245,6 +253,9 @@ export const Agreement: React.FC = () => {
       nameTemplate,
       observations: obs,
       signature: dataURL,
+      typeEvent,
+      quantityPersons,
+      printerPhoto,
     };
 
     await api.post('agreements', result);
@@ -255,11 +266,11 @@ export const Agreement: React.FC = () => {
       },
     });
 
-    await handleGeneratedAgreementSendToEmail(cpf, dataEvento);
+    await handleGeneratedAgreementSendToEmail(cpf, dataHoraInicioEvento);
 
     setIsLoading(false);
 
-    navigate('/success-mail');
+    // navigate('/success-mail');
   };
 
   const handleSearchcep = async (cep: string) => {
@@ -480,6 +491,16 @@ export const Agreement: React.FC = () => {
                   )}
                 </div>
                 <div>
+                  <label htmlFor="quantityPersons">Quantidade de pessoas</label>
+                  <input
+                    type="number"
+                    {...register('quantityPersons', { required: true })}
+                  />
+                  {errors.quantityPersons && (
+                    <span>Quantidade de pessoas obrigatória</span>
+                  )}
+                </div>
+                <div>
                   <label htmlFor="valorContrato">Valor contratado</label>
                   <CurrencyInput
                     prefix="R$"
@@ -489,89 +510,8 @@ export const Agreement: React.FC = () => {
                     {...register('valorContrato', { required: true })}
                   />
                   {errors.valorContrato && <span>Valor obrigatório</span>}
-                </div>
-                <div>
-                  <label htmlFor="quantidadeHoras">
-                    Quantidade de horas contratada
-                  </label>
-                  <input
-                    type="number"
-                    {...register('quantidadeHoras', { required: true })}
-                  />
-                  {errors.quantidadeHoras && (
-                    <span>Quantidade de horas obrigatória</span>
-                  )}
                 </div>
               </div>
-              {/* <div className="field">
-                <div>
-                  <label htmlFor="Produto">Produto</label>
-                  <select
-                    {...register('product', { required: true })}
-                    onChange={e => setTipoProduto(e.target.value as any)}
-                  >
-                    <option value="">Selecione o produto</option>
-                    <option value={1}>Totem Fotográfico</option>
-                    <option value={2}>Hashtag Pitstop</option>
-                    <option value={3}>Cabine Fotográfica Tradicional</option>
-                    <option value={4}>Cabine Fotográfica Premium</option>
-                    <option value={5}>Espelho Mágico</option>
-                    <option value={6}>Espelho Meu (Portátil)</option>
-                    <option value={9}>Ring Light</option>
-                    <option value={10}>Cabine Infinity + Ring Light</option>
-                    <option value={12}>Cabine Infinity</option>
-                    <option value={15}>Ring Light + Caricatura</option>
-                    <option value={16}>Cabine Infinity QR + Caricatura</option>
-                  </select>
-                  {errors.product && <span>Produto obrigatório</span>}
-                </div>
-                <div>
-                  <label htmlFor="sizeTemplate">Tipo da moldura</label>
-                  <select
-                    id="sizeTemplate"
-                    {...register('sizeTemplate', { required: true })}
-                  >
-                    <option value="">Selecione</option>
-                    <option value="A definir">A definir</option>
-                    <option value="Tradicional (10x15)">
-                      Tradicional (10x15)
-                    </option>
-                    <option value="Tirinhas (5x15)">Tirinhas (5x15)</option>
-                    {tipoProduto !== '1' && (
-                      <option value="Polaróide (7,5x10)">
-                        Polaróide (7,5x10)
-                      </option>
-                    )}
-                    ,
-                  </select>
-                  {errors.formaPagamento && (
-                    <span>Forma de pagamento obrigatória</span>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="valorContrato">Valor contratado</label>
-                  <CurrencyInput
-                    prefix="R$"
-                    decimalSeparator=","
-                    decimalScale={2}
-                    intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-                    {...register('valorContrato', { required: true })}
-                  />
-                  {errors.valorContrato && <span>Valor obrigatório</span>}
-                </div>
-                <div>
-                  <label htmlFor="quantidadeHoras">
-                    Quantidade de horas contratada
-                  </label>
-                  <input
-                    type="number"
-                    {...register('quantidadeHoras', { required: true })}
-                  />
-                  {errors.quantidadeHoras && (
-                    <span>Quantidade de horas obrigatória</span>
-                  )}
-                </div>
-              </div> */}
 
               <div className="field">
                 <div>
@@ -601,7 +541,30 @@ export const Agreement: React.FC = () => {
                     <span>Forma de pagamento obrigatória</span>
                   )}
                 </div>
+                {/* <div>
+                  <label htmlFor="valorContrato">Valor contratado</label>
+                  <CurrencyInput
+                    prefix="R$"
+                    decimalSeparator=","
+                    decimalScale={2}
+                    intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                    {...register('valorContrato', { required: true })}
+                  />
+                  {errors.valorContrato && <span>Valor obrigatório</span>}
+                </div> */}
                 <div>
+                  <label htmlFor="quantidadeHoras">
+                    Quantidade de horas contratada
+                  </label>
+                  <input
+                    type="number"
+                    {...register('quantidadeHoras', { required: true })}
+                  />
+                  {errors.quantidadeHoras && (
+                    <span>Quantidade de horas obrigatória</span>
+                  )}
+                </div>
+                {/* <div>
                   <label htmlFor="dataEntrada">Data do valor da entrada</label>
                   <input
                     type="date"
@@ -610,37 +573,64 @@ export const Agreement: React.FC = () => {
                   {errors.dataEntrada && (
                     <span>Data do valor da entrada obrigatória</span>
                   )}
-                </div>
+                </div> */}
               </div>
               <div className="field">
+                {/* Impressão */}
                 <div>
-                  <label htmlFor="dataEvento">Data do Evento</label>
-                  <input
-                    type="date"
-                    {...register('dataEvento', { required: true })}
-                  />
-                  {errors.dataEvento && <span>Data do evento obrigatória</span>}
+                  <label htmlFor="printerPhoto">Tem impressão</label>
+                  <select
+                    id="printerPhoto"
+                    {...register('printerPhoto', { required: true })}
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                  </select>
+                  {errors.printherPhoto && <span>Impressão obrigatória</span>}
                 </div>
                 <div>
-                  <label htmlFor="initialHour">
-                    Horário de inicio do evento
+                  <label htmlFor="typeEvent">Tipo de evento</label>
+                  <select
+                    id="typeEvent"
+                    {...register('typeEvent', { required: true })}
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="Casamento">Casamento</option>
+                    <option value="Debutante">Debutante</option>
+                    <option value="Aniversários">Aniversários</option>
+                    <option value="Confraternização">Confraternização</option>
+                    <option value="Formatura">Formatura</option>
+                    <option value="Feira">Feira</option>
+                    <option value="Beneficente">Beneficente</option>
+                    <option value="Seminários">Seminários</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                  {errors.typeEvent && <span>Tipo de evento obrigatório</span>}
+                </div>
+                <div>
+                  <label htmlFor="dataHoraInicioEvento">
+                    Data e hora do início Evento
                   </label>
                   <input
-                    type="time"
-                    {...register('initialHour', { required: true })}
+                    type="datetime-local"
+                    {...register('dataHoraInicioEvento', { required: true })}
                   />
-                  {errors.initialHour && (
-                    <span>Hora do início do evento obrigatória</span>
+                  {errors.dataHoraInicioEvento && (
+                    <span>Data e hora do início evento obrigatória</span>
                   )}
                 </div>
+
                 <div>
-                  <label htmlFor="endHour">Horário de término do evento</label>
+                  <label htmlFor="dataHoraFimEvento">
+                    Data e hora do fim Evento
+                  </label>
                   <input
-                    type="time"
-                    {...register('endHour', { required: true })}
+                    type="datetime-local"
+                    {...register('dataHoraFimEvento', { required: true })}
                   />
-                  {errors.endHour && (
-                    <span>Horário de término do evento obrigatório</span>
+                  {errors.dataHoraFimEvento && (
+                    <span>Data e hora do fim evento obrigatória</span>
                   )}
                 </div>
               </div>
