@@ -7,7 +7,6 @@ import InputMask from 'react-input-mask';
 import axios from 'axios';
 import CurrencyInput from 'react-currency-input-field';
 import moment from 'moment';
-import SignatureCanvas from 'react-signature-canvas';
 
 import { LoadScript, StandaloneSearchBox } from '@react-google-maps/api';
 
@@ -41,21 +40,9 @@ export const Agreement: React.FC = () => {
   const [listProducts, setListProducts] = useState([]);
   const [width, setWidth] = useState<number>(window.innerWidth);
 
-  const [dataURL, setDataURL] = React.useState<string | null>(null);
-  const padRef = React.useRef<SignatureCanvas>(null);
-
   const isMobile = width <= 768;
 
   const navigate = useNavigate();
-
-  const handleClear = () => {
-    padRef.current?.clear();
-  };
-
-  const handleGenerate = () => {
-    const url = padRef.current?.getTrimmedCanvas().toDataURL('image/png');
-    if (url) setDataURL(url);
-  };
 
   const [searchBoxA, setSearchBoxA] =
     React.useState<google.maps.places.SearchBox>();
@@ -148,7 +135,6 @@ export const Agreement: React.FC = () => {
   ) => {
     const formataData = moment(dataHoraInicioEvento).format('YYYY-MM-DD');
 
-    console.log('Data formatada: ', formataData);
     const cpfFormatado = cpf.replace(/[^\d]+/g, '');
     await api.get(
       `agreements/generated-agreement?cpf=${cpfFormatado}&dataEvento=${formataData}`,
@@ -159,8 +145,8 @@ export const Agreement: React.FC = () => {
   };
 
   const onSubmit = async (data: any) => {
-    const url = padRef.current?.getTrimmedCanvas().toDataURL('image/png');
-    if (url) setDataURL(url);
+    // const url = padRef.current?.getTrimmedCanvas().toDataURL('image/png');
+    // if (url) setDataURL(url);
     const {
       name,
       email,
@@ -172,22 +158,17 @@ export const Agreement: React.FC = () => {
       sizeTemplate,
       valorContrato,
       quantidadeHoras,
-      dataEvento,
       dataHoraInicioEvento,
       dataHoraFimEvento,
-      initialHour,
-      endHour,
       local,
       cerimonial,
       formaPagamento,
-      dataEntrada,
       nameTemplate,
       valorEntrada,
       obs,
       typeEvent,
       quantityPersons,
       printerPhoto,
-      signature,
     } = data;
 
     const formataCPFCNPJ = await cpf
@@ -252,7 +233,6 @@ export const Agreement: React.FC = () => {
       company_id: 1,
       nameTemplate,
       observations: obs,
-      signature: dataURL,
       typeEvent,
       quantityPersons,
       printerPhoto,
@@ -557,7 +537,7 @@ export const Agreement: React.FC = () => {
                     Quantidade de horas contratada
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     {...register('quantidadeHoras', { required: true })}
                   />
                   {errors.quantidadeHoras && (
