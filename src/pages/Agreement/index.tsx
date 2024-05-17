@@ -537,7 +537,7 @@ export const Agreement: React.FC = () => {
                     Quantidade de horas contratada
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     {...register('quantidadeHoras', { required: true })}
                   />
                   {errors.quantidadeHoras && (
